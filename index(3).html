@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050506">
+<title>Road to Doomsday — Marvel Tracker</title>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#050506;color:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0%,rgba(255,255,255,.07),transparent 35%),linear-gradient(180deg,#0b0b0d 0,#050506 38%,#050506 100%);z-index:-1}
+.wrap{width:min(1060px,calc(100% - 32px));margin:auto}
+.hero{min-height:430px;display:flex;align-items:center;justify-content:center;text-align:center;padding:58px 0 36px;position:relative}
+.hero:after{content:"";position:absolute;left:50%;bottom:0;width:min(700px,90%);height:1px;background:linear-gradient(90deg,transparent,#34343a,transparent)}
+.kicker{font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:#aaa;margin-bottom:22px}
+h1{font-size:clamp(56px,11vw,112px);line-height:.82;letter-spacing:-.075em;margin:0;font-weight:900}
+h1 span{display:block;color:#aaa}
+.hero p{max-width:580px;margin:28px auto 0;color:#999;line-height:1.6;font-size:14px}
+.progress{margin:25px auto 0;width:min(650px,100%);text-align:left}
+.progressTop{display:flex;justify-content:space-between;align-items:end}
+.percent{font-size:42px;font-weight:850;letter-spacing:-.05em}
+.small{font-size:12px;color:#777}
+.bar{height:6px;background:#202126;border-radius:99px;overflow:hidden;margin-top:12px}
+.fill{height:100%;width:0;background:#e7e7e7;border-radius:99px;transition:width .35s ease}
+.controls{position:sticky;top:0;z-index:20;padding:13px 0;background:rgba(5,5,6,.9);backdrop-filter:blur(18px);border-bottom:1px solid #1d1d21}
+.searchRow{display:flex;gap:9px;margin-bottom:10px}
+input,select,button{font:inherit}
+input,select{border:1px solid #292a30;background:#101114;color:#eee;outline:none;border-radius:12px;padding:12px 14px}
+input{flex:1;min-width:0}
+select{appearance:none}
+button{border:1px solid #292a30;background:#101114;color:#ddd;border-radius:12px;padding:12px 15px;cursor:pointer}
+button:hover{background:#18191d}
+.tabs{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap;border-radius:999px;padding:9px 14px;font-size:12px}
+.tab.active{background:#eee;color:#09090a;border-color:#eee}
+.selects{display:flex;gap:8px;margin-top:9px}
+.selects select{flex:1}
+.section{padding:30px 0 4px}
+.yearTitle{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.yearTitle h2{font-size:20px;letter-spacing:-.03em;margin:0}
+.yearCount{color:#666;font-size:11px}
+.card{display:flex;align-items:center;gap:15px;padding:16px 17px;margin:7px 0;border:1px solid #202126;background:linear-gradient(135deg,#101114,#0c0d0f);border-radius:16px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s}
+.card:hover{transform:translateY(-1px);border-color:#3b3c43;background:#131418}
+.check{width:27px;height:27px;border:1px solid #484950;border-radius:50%;display:grid;place-items:center;flex:none;transition:.2s}
+.check:after{content:"✓";font-size:14px;opacity:0;transform:scale(.5);transition:.2s}
+.title{font-weight:650;font-size:14px;line-height:1.35}
+.meta{font-size:11px;color:#666;margin-top:4px}
+.card.done{opacity:.42}
+.card.done .check{background:#eee;color:#09090a;border-color:#eee}
+.card.done .check:after{opacity:1;transform:scale(1)}
+.card.done .title{text-decoration:line-through}
+.empty{text-align:center;padding:80px 20px;color:#777}
+footer{padding:70px 0 45px;text-align:center;color:#555;font-size:11px}
+@media(max-width:650px){
+.wrap{width:min(100% - 20px,1060px)}
+.hero{min-height:390px;padding:48px 0 30px}
+h1{font-size:clamp(52px,17vw,82px)}
+.hero p{font-size:13px}
+.searchRow{display:grid;grid-template-columns:1fr auto}
+.searchRow input{grid-column:1/-1}
+.selects{display:grid;grid-template-columns:1fr 1fr}
+.card{padding:14px 13px}
+.title{font-size:13px}
+}
+</style>
+</head>
+<body>
+<header class="hero">
+<div class="wrap">
+<div class="kicker">Personal Marvel Watch Tracker</div>
+<h1>ROAD TO<br><span>DOOMSDAY</span></h1>
+<p>Track your journey through Marvel's movies, series and specials. Your progress is saved automatically on this device.</p>
+<div class="progress">
+<div class="progressTop"><div><div class="percent" id="pct">0%</div><div class="small" id="stats">0 watched</div></div><div class="small" id="rem">0 remaining</div></div>
+<div class="bar"><div class="fill" id="fill"></div></div>
+</div>
+</div>
+</header>
+
+<div class="controls">
+<div class="wrap">
+<div class="searchRow"><input id="search" placeholder="Search titles..."><button id="hide">Hide watched</button><button id="reset">Reset</button></div>
+<div class="tabs" id="tabs">
+<button class="tab active" data-filter="all">All Marvel</button>
+<button class="tab" data-filter="infinity">Infinity Saga</button>
+<button class="tab" data-filter="multiverse">Multiverse Saga</button>
+<button class="tab" data-filter="legacy">Marvel Legacy</button>
+<button class="tab" data-filter="animation">Animation</button>
+</div>
+<div class="selects"><select id="year"><option value="all">All release years</option></select><select id="status"><option value="all">All titles</option><option value="watched">Watched</option><option value="unwatched">Unwatched</option></select></div>
+</div>
+</div>
+
+<main class="wrap" id="list"></main>
+<footer>ROAD TO DOOMSDAY · Personal tracker · Progress stored locally</footer>
+
+<script>
+const DATA=[{"title": "The Punisher", "year": 1989}, {"title": "Blade", "year": 1998}, {"title": "X-Men", "year": 2000}, {"title": "Blade II", "year": 2002}, {"title": "Spider-Man", "year": 2002}, {"title": "Daredevil", "year": 2003}, {"title": "X2: X-Men United", "year": 2003}, {"title": "Blade: Trinity", "year": 2004}, {"title": "Spider-Man 2", "year": 2004}, {"title": "Elektra", "year": 2005}, {"title": "Fantastic Four", "year": 2005}, {"title": "Fantastic Four: Rise of the Silver Surfer", "year": 2007}, {"title": "Ghost Rider", "year": 2007}, {"title": "Spider-Man 3", "year": 2007}, {"title": "Iron Man", "year": 2008}, {"title": "Punisher: War Zone", "year": 2008}, {"title": "The Incredible Hulk", "year": 2008}, {"title": "Iron Man 2", "year": 2010}, {"title": "Captain America: The First Avenger", "year": 2011}, {"title": "Ghost Rider: Spirit of Vengeance", "year": 2011}, {"title": "Thor", "year": 2011}, {"title": "The Amazing Spider-Man", "year": 2012}, {"title": "The Avengers", "year": 2012}, {"title": "Agents of S.H.I.E.L.D.", "year": 2013}, {"title": "Iron Man 3", "year": 2013}, {"title": "Thor: The Dark World", "year": 2013}, {"title": "Captain America: The Winter Soldier", "year": 2014}, {"title": "Guardians of the Galaxy", "year": 2014}, {"title": "X-Men: Days of Future Past", "year": 2014}, {"title": "Agent Carter — Season 1", "year": 2015}, {"title": "Ant-Man", "year": 2015}, {"title": "Avengers: Age of Ultron", "year": 2015}, {"title": "Daredevil — Season 1", "year": 2015}, {"title": "Jessica Jones — Season 1", "year": 2015}, {"title": "Agent Carter — Season 2", "year": 2016}, {"title": "Captain America: Civil War", "year": 2016}, {"title": "Daredevil — Season 2", "year": 2016}, {"title": "Deadpool", "year": 2016}, {"title": "Doctor Strange", "year": 2016}, {"title": "Luke Cage — Season 1", "year": 2016}, {"title": "Slingshot", "year": 2016}, {"title": "X-Men: Apocalypse", "year": 2016}, {"title": "Guardians of the Galaxy Vol. 2", "year": 2017}, {"title": "Inhumans", "year": 2017}, {"title": "Iron Fist — Season 1", "year": 2017}, {"title": "Legion — Season 1", "year": 2017}, {"title": "Logan", "year": 2017}, {"title": "Runaways — Season 1", "year": 2017}, {"title": "Spider-Man: Homecoming", "year": 2017}, {"title": "The Defenders", "year": 2017}, {"title": "The Gifted — Season 1", "year": 2017}, {"title": "The Punisher — Season 1", "year": 2017}, {"title": "Thor: Ragnarok", "year": 2017}, {"title": "Ant-Man and the Wasp", "year": 2018}, {"title": "Avengers: Infinity War", "year": 2018}, {"title": "Black Panther", "year": 2018}, {"title": "Cloak & Dagger — Season 1", "year": 2018}, {"title": "Daredevil — Season 3", "year": 2018}, {"title": "Deadpool 2", "year": 2018}, {"title": "Iron Fist — Season 2", "year": 2018}, {"title": "Jessica Jones — Season 2", "year": 2018}, {"title": "Legion — Season 2", "year": 2018}, {"title": "Luke Cage — Season 2", "year": 2018}, {"title": "Marvel Rising", "year": 2018}, {"title": "Marvel's Avengers", "year": 2018}, {"title": "Runaways — Season 2", "year": 2018}, {"title": "Spider-Man: Into the Spider-Verse", "year": 2018}, {"title": "The Gifted — Season 2", "year": 2018}, {"title": "Venom", "year": 2018}, {"title": "Avengers: Endgame", "year": 2019}, {"title": "Captain Marvel", "year": 2019}, {"title": "Cloak & Dagger — Season 2", "year": 2019}, {"title": "Jessica Jones — Season 3", "year": 2019}, {"title": "Legion — Season 3", "year": 2019}, {"title": "Runaways — Season 3", "year": 2019}, {"title": "Spider-Man: Far From Home", "year": 2019}, {"title": "The Punisher — Season 2", "year": 2019}, {"title": "X-Men: Dark Phoenix", "year": 2019}, {"title": "Agents of S.H.I.E.L.D. — Final Season", "year": 2020}, {"title": "Black Widow", "year": 2021}, {"title": "Eternals", "year": 2021}, {"title": "Hawkeye", "year": 2021}, {"title": "Hit-Monkey — Season 1", "year": 2021}, {"title": "Loki — Season 1", "year": 2021}, {"title": "Marvel's Spidey and His Amazing Friends", "year": 2021}, {"title": "Shang-Chi and the Legend of the Ten Rings", "year": 2021}, {"title": "Spider-Man: No Way Home", "year": 2021}, {"title": "The Falcon and the Winter Soldier", "year": 2021}, {"title": "WandaVision", "year": 2021}, {"title": "What If...? — Season 1", "year": 2021}, {"title": "Black Panther: Wakanda Forever", "year": 2022}, {"title": "Doctor Strange in the Multiverse of Madness", "year": 2022}, {"title": "I Am Groot — Season 1", "year": 2022}, {"title": "Moon Knight", "year": 2022}, {"title": "Morbius", "year": 2022}, {"title": "Ms. Marvel", "year": 2022}, {"title": "She-Hulk: Attorney-at-Law", "year": 2022}, {"title": "The Guardians of the Galaxy Holiday Special", "year": 2022}, {"title": "Thor: Love and Thunder", "year": 2022}, {"title": "Werewolf by Night", "year": 2022}, {"title": "Ant-Man and the Wasp: Quantumania", "year": 2023}, {"title": "Guardians of the Galaxy Vol. 3", "year": 2023}, {"title": "I Am Groot — Season 2", "year": 2023}, {"title": "LEGO Marvel Avengers: Code Red", "year": 2023}, {"title": "Loki — Season 2", "year": 2023}, {"title": "Moon Girl and Devil Dinosaur", "year": 2023}, {"title": "Secret Invasion", "year": 2023}, {"title": "Spider-Man: Across the Spider-Verse", "year": 2023}, {"title": "The Marvels", "year": 2023}, {"title": "What If...? — Season 2", "year": 2023}, {"title": "Agatha All Along", "year": 2024}, {"title": "Deadpool & Wolverine", "year": 2024}, {"title": "Echo", "year": 2024}, {"title": "Hit-Monkey — Season 2", "year": 2024}, {"title": "LEGO Marvel Avengers: Mission Demolition", "year": 2024}, {"title": "What If...? — Season 3", "year": 2024}, {"title": "X-Men '97 — Season 1", "year": 2024}, {"title": "Captain America: Brave New World", "year": 2025}, {"title": "Daredevil: Born Again — Season 1", "year": 2025}, {"title": "Eyes of Wakanda", "year": 2025}, {"title": "Ironheart", "year": 2025}, {"title": "LEGO Marvel Avengers: Strange Tails", "year": 2025}, {"title": "Marvel Zombies", "year": 2025}, {"title": "Marvel's Iron Man and His Awesome Friends", "year": 2025}, {"title": "The Fantastic Four: First Steps", "year": 2025}, {"title": "Thunderbolts*", "year": 2025}, {"title": "Wonder Man — Season 1", "year": 2025}, {"title": "Your Friendly Neighborhood Spider-Man — Season 1", "year": 2025}, {"title": "Daredevil: Born Again — Season 2", "year": 2026}, {"title": "Spider-Man: Brand New Day", "year": 2026}, {"title": "The Punisher: One Last Kill", "year": 2026}, {"title": "X-Men '97 — Season 2", "year": 2026}];
+const KEY="marvel-road-doomsday-premium-v1";
+let state=JSON.parse(localStorage.getItem(KEY)||"{}");
+let filter="all", hide=false;
+
+const infinity=new Set(["Iron Man","Iron Man 2","The Incredible Hulk","Iron Man 3","Thor","Captain America: The First Avenger","The Avengers","Iron Man 2","Thor: The Dark World","Captain America: The Winter Soldier","Guardians of the Galaxy","Avengers: Age of Ultron","Ant-Man","Captain America: Civil War","Doctor Strange","Guardians of the Galaxy Vol. 2","Spider-Man: Homecoming","Thor: Ragnarok","Black Panther","Avengers: Infinity War","Ant-Man and the Wasp","Captain Marvel","Avengers: Endgame","Spider-Man: Far From Home"]);
+const animationTerms=["What If...?","I Am Groot","Marvel's Avengers","Marvel's Guardians of the Galaxy","Marvel Rising","Marvel's Spider-Man","Marvel's Spidey and His Amazing Friends","Moon Girl and Devil Dinosaur","X-Men '97","Marvel Zombies","Your Friendly Neighborhood Spider-Man","LEGO Marvel"];
+
+function category(x){
+if(animationTerms.some(v=>x.title.includes(v)))return"animation";
+if(infinity.has(x.title))return"infinity";
+if(x.year>=2021 && x.year<=2026 && ["WandaVision","The Falcon and the Winter Soldier","Loki","Black Widow","Shang-Chi","Eternals","Spider-Man: No Way Home","Hawkeye","Moon Knight","Doctor Strange in the Multiverse","Ms. Marvel","Thor: Love and Thunder","She-Hulk","Werewolf by Night","Black Panther: Wakanda Forever","Guardians of the Galaxy Holiday","Quantumania","Guardians of the Galaxy Vol. 3","Secret Invasion","The Marvels","Echo","Deadpool & Wolverine","Agatha All Along","Ironheart","Eyes of Wakanda","Born Again","Captain America: Brave New World","Thunderbolts","Fantastic Four: First Steps","Wonder Man"].some(v=>x.title.includes(v)))return"multiverse";
+return"legacy";
+}
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function update(){
+let done=Object.values(state).filter(Boolean).length,total=DATA.length,p=Math.round(done/total*100);
+document.getElementById("pct").textContent=p+"%";
+document.getElementById("stats").textContent=done+" of "+total+" watched";
+document.getElementById("rem").textContent=(total-done)+" remaining";
+document.getElementById("fill").style.width=p+"%";
+}
+function years(){
+let ys=[...new Set(DATA.map(x=>x.year))].sort((a,b)=>a-b);
+ys.forEach(y=>{let o=document.createElement("option");o.value=y;o.textContent=y;document.getElementById("year").appendChild(o)});
+}
+function render(){
+let q=document.getElementById("search").value.toLowerCase(),yv=document.getElementById("year").value,st=document.getElementById("status").value;
+let arr=DATA.map((x,i)=>({...x,i})).filter(x=>
+(!hide||!state[x.i]) &&
+(!q||x.title.toLowerCase().includes(q)) &&
+(filter==="all"||category(x)===filter) &&
+(yv==="all"||String(x.year)===yv) &&
+(st==="all"||(st==="watched"&&state[x.i])||(st==="unwatched"&&!state[x.i]))
+);
+let list=document.getElementById("list");list.innerHTML="";
+let ys=[...new Set(arr.map(x=>x.year))].sort((a,b)=>a-b);
+if(!arr.length){list.innerHTML='<div class="empty">No titles match these filters.</div>';return}
+ys.forEach(y=>{
+let a=arr.filter(x=>x.year===y),sec=document.createElement("section");sec.className="section";
+sec.innerHTML=`<div class="yearTitle"><h2>${y}</h2><div class="yearCount">${a.length} titles</div></div>`;
+a.forEach(x=>{
+let c=document.createElement("div");c.className="card"+(state[x.i]?" done":"");
+c.innerHTML=`<div class="check"></div><div><div class="title">${x.title}</div><div class="meta">Released ${x.year}</div></div>`;
+c.onclick=()=>{state[x.i]=!state[x.i];save();render();update()};
+sec.appendChild(c);
+});
+list.appendChild(sec);
+});
+}
+document.getElementById("tabs").onclick=e=>{
+let b=e.target.closest(".tab");if(!b)return;
+filter=b.dataset.filter;
+document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");render();
+};
+document.getElementById("search").oninput=render;
+document.getElementById("year").onchange=render;
+document.getElementById("status").onchange=render;
+document.getElementById("hide").onclick=()=>{hide=!hide;document.getElementById("hide").textContent=hide?"Show watched":"Hide watched";render()};
+document.getElementById("reset").onclick=()=>{if(confirm("Reset all checkmarks?")){state={};save();render();update()}};
+years();render();update();
+</script>
+</body>
+</html>
